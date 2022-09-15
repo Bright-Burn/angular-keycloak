@@ -1,14 +1,14 @@
-### STAGE 1: Build ###
-FROM registry.access.redhat.com/ubi8/nodejs-14:1-51 as build-deps
-#WORKDIR /usr/src/app
+# ### STAGE 1: Build ###
+# FROM registry.access.redhat.com/ubi8/nodejs-14:1-51 as build-deps
+# #WORKDIR /usr/src/app
 
-WORKDIR /app
-USER 0
-COPY package-lock.json ./
-COPY package.json ./
-RUN npm ci
-COPY . .
-RUN npm run build
+# WORKDIR /app
+# USER 0
+# COPY package-lock.json ./
+# COPY package.json ./
+# RUN npm ci
+# COPY . .
+# RUN npm run build
 
 ### STAGE 2: Run ###
 FROM registry.access.redhat.com/ubi8/nginx-118:1-46 as final
@@ -19,8 +19,8 @@ WORKDIR /usr/share/nginx/html
 COPY default.conf /etc/nginx/conf.d/default.template
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY replace_placeholders.sh /
-COPY --from=build-deps /app/dist/my-app /usr/share/nginx/html
-EXPOSE 8080
+COPY dist /usr/share/nginx/html
+# EXPOSE 8080
 
 ENTRYPOINT [ "sh", "/replace_placeholders.sh" ]
 
